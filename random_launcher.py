@@ -1,6 +1,7 @@
 # random_launcher.py
 
 import tkinter as tk
+import customtkinter as ctk
 import random
 from app import TicketManagerApp
 
@@ -53,11 +54,12 @@ def main():
     alloc_data = generate_random_allocations(tickets_data, persons_data)
 
     # Cria a janela e passa os dados aleatórios
-    root = tk.Tk()
+    root = ctk.CTk()
     app = TicketManagerApp(root,
                            tickets_data=tickets_data,
                            persons_data=persons_data,
                            alloc_data=alloc_data)
+    app.atualizar_listas()
     root.mainloop()
 
 if __name__ == "__main__":
