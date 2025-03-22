@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 from tkinter.filedialog import askopenfilename
 import csv
 import math
+import customtkinter as ctk
 
 def parse_int(texto):
     """
@@ -65,7 +66,10 @@ class TicketManagerApp:
                  tickets_data=None, persons_data=None, alloc_data=None):
         self.root = root
         self.root.title("Gerenciador de Tickets e Atendentes")
-        self.root.geometry("1100x500")
+        self.root.geometry("1100x600")
+
+        ctk.set_appearance_mode("light")
+        ctk.set_default_color_theme("dark-blue")
 
         # Variável para armazenar dados do drag & drop
         self.drag_data = {}
@@ -91,41 +95,45 @@ class TicketManagerApp:
             self.load_allocations(allocations_csv)
 
         # Menu superior com botões (menu compacto)
-        top_frame = tk.Frame(self.root)
-        top_frame.pack(side=tk.TOP, fill=tk.X, padx=2, pady=2)
+        top_frame = ctk.CTkFrame(self.root)
+        top_frame.pack(side=ctk.TOP, fill=ctk.X, padx=2, pady=2)
 
-        btn_add_ticket = tk.Button(top_frame, text="+ TICKET", font=("Helvetica", 9),
-                                   bg="#ccffcc", command=self.janela_criar_ticket)
-        btn_add_ticket.pack(side=tk.LEFT, padx=2)
-        btn_add_atendente = tk.Button(top_frame, text="+ ATENDENTE", font=("Helvetica", 9),
-                                      bg="#ccffcc", command=self.janela_criar_atendente)
-        btn_add_atendente.pack(side=tk.LEFT, padx=2)
-        btn_import_tickets = tk.Button(top_frame, text="Importar Tickets", font=("Helvetica", 9),
-                                       bg="#ccffcc", command=self.importar_tickets)
-        btn_import_tickets.pack(side=tk.LEFT, padx=2)
-        btn_import_atendentes = tk.Button(top_frame, text="Importar Atendentes", font=("Helvetica", 9),
-                                          bg="#ccffcc", command=self.importar_atendentes)
-        btn_import_atendentes.pack(side=tk.LEFT, padx=2)
-        btn_import_alloc = tk.Button(top_frame, text="Importar Alocações", font=("Helvetica", 9),
-                                     bg="#ccffcc", command=self.importar_alocacoes)
-        btn_import_alloc.pack(side=tk.LEFT, padx=2)
-        btn_limpar_alocacoes = tk.Button(top_frame, text="LIMPAR ALOCAÇÕES", font=("Helvetica", 9),
-                                         bg="#ffcccc", command=self.limpar_alocacoes)
-        btn_limpar_alocacoes.pack(side=tk.LEFT, padx=2)
-        btn_limpar_tickets = tk.Button(top_frame, text="LIMPAR TICKETS", font=("Helvetica", 9),
-                                       bg="#ffcccc", command=self.limpar_tickets)
-        btn_limpar_tickets.pack(side=tk.LEFT, padx=2)
-        btn_limpar_atendentes = tk.Button(top_frame, text="LIMPAR ATENDENTES", font=("Helvetica", 9),
-                                          bg="#ffcccc", command=self.limpar_atendentes)
-        btn_limpar_atendentes.pack(side=tk.LEFT, padx=2)
-        self.label_instrucoes = tk.Label(top_frame, text="Arraste o ticket para o atendente para alocar", font=("Helvetica", 9), fg="black")
-        self.label_instrucoes.pack(side=tk.LEFT, padx=10)
+        btn_add_ticket = ctk.CTkButton(top_frame, text="+ TICKET",
+                                   command=self.janela_criar_ticket)
+        btn_add_ticket.pack(side=ctk.LEFT, padx=2)
+
+        btn_add_atendente = ctk.CTkButton(top_frame, text="+ ATENDENTE", 
+                                      command=self.janela_criar_atendente)
+        btn_add_atendente.pack(side=ctk.LEFT, padx=2)
+        btn_import_tickets = ctk.CTkButton(top_frame, text="Importar Tickets",
+                                       command=self.importar_tickets)
+        btn_import_tickets.pack(side=ctk.LEFT, padx=2)
+        btn_import_atendentes = ctk.CTkButton(top_frame, text="Importar Atendentes", 
+                                          command=self.importar_atendentes)
+        btn_import_atendentes.pack(side=ctk.LEFT, padx=2)
+        btn_import_alloc = ctk.CTkButton(top_frame, text="Importar Alocações", 
+                                     command=self.importar_alocacoes)
+        btn_import_alloc.pack(side=ctk.LEFT, padx=2)
+        btn_limpar_alocacoes = ctk.CTkButton(top_frame, text="LIMPAR ALOCAÇÕES", 
+                                        command=self.limpar_alocacoes, fg_color="#bf243c", hover=False)
+        btn_limpar_alocacoes.pack(side=ctk.LEFT, padx=2)
+        btn_limpar_tickets = ctk.CTkButton(top_frame, text="LIMPAR TICKETS", 
+                                       command=self.limpar_tickets, fg_color="#bf243c", hover=False)
+        btn_limpar_tickets.pack(side=ctk.LEFT, padx=2)
+        btn_limpar_atendentes = ctk.CTkButton(top_frame, text="LIMPAR ATENDENTES", 
+                                          command=self.limpar_atendentes, fg_color="#bf243c", hover=False)
+        btn_limpar_atendentes.pack(side=ctk.LEFT, padx=2)
+        self.label_instrucoes = ctk.CTkLabel(top_frame, text="Arraste o ticket para o atendente para alocar", fg_color="transparent")
+        self.label_instrucoes.pack(side=ctk.LEFT, padx=10)
 
         # Container principal: Canvas (com scrollbar) e Tabela Resumo
-        container = tk.Frame(self.root)
-        container.pack(fill=tk.BOTH, expand=True)
-        frame_canvas = tk.Frame(container)
-        frame_canvas.grid(row=0, column=0, sticky="nsew")
+        container = ctk.CTkFrame(self.root)
+        container.pack(fill=ctk.BOTH, expand=True)
+
+        frame_canvas = ctk.CTkFrame(container, width=500, height=300)
+        frame_canvas.pack(fill=ctk.BOTH, expand=True)
+
+        frame_canvas.grid(row=0, column=0, padx=100, pady=10, sticky="nsew")
         self.canvas = tk.Canvas(frame_canvas, bg="white")
         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         v_scroll = tk.Scrollbar(frame_canvas, orient="vertical", command=self.canvas.yview)
@@ -135,12 +143,12 @@ class TicketManagerApp:
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        self.frame_summary = tk.Frame(container, bg="white", bd=2, relief=tk.SOLID, padx=10, pady=10)
+        self.frame_summary = ctk.CTkFrame(container, fg_color="#fff", border_width=2)
         self.frame_summary.grid(row=0, column=1, sticky="ns")
 
         # Cria os frames para Tickets e Atendentes dentro do Canvas
-        self.frame_tickets = tk.Frame(self.canvas, bg="#f0f0f0", width=300, height=400)
-        self.frame_atendentes = tk.Frame(self.canvas, bg="#e0e0e0", width=300, height=400)
+        self.frame_tickets = ctk.CTkFrame(self.canvas, fg_color="#f0f0f0", width=300, height=400, border_width=2, border_color="#333")
+        self.frame_atendentes = ctk.CTkFrame(self.canvas, fg_color="#f0f0f0", width=300, height=400, border_width=2, border_color="#333")
         self.canvas_tickets_window = self.canvas.create_window(20, 20, anchor="nw", window=self.frame_tickets)
         self.canvas_atend_window = self.canvas.create_window(400, 20, anchor="nw", window=self.frame_atendentes)
 
@@ -251,63 +259,63 @@ class TicketManagerApp:
             widget.destroy()
 
         # Lista de Tickets
-        tk.Label(self.frame_tickets, text="TICKETS (Arraste para alocar)", font=("Helvetica", 14, "bold"),
-                 bg="#f0f0f0", fg="black").pack(pady=5)
+        ctk.CTkLabel(self.frame_tickets, text="TICKETS (Arraste para alocar)", font=("Helvetica", 14, "bold"),
+                text_color="black").pack(pady=10, padx=30)
         for i, ticket in enumerate(self.tickets):
-            bg_color = "#ccffcc" if ticket.status == "Alocado" else "#ffffcc"
-            frame_ticket = tk.Frame(self.frame_tickets, bd=1, relief=tk.SOLID, padx=5, pady=5, bg=bg_color)
-            frame_ticket.pack(fill=tk.X, padx=5, pady=5)
+            bg_color = "#79db79" if ticket.status == "Alocado" else "#d1c21b"
+            frame_ticket = ctk.CTkFrame(self.frame_tickets, border_width=2, fg_color=bg_color, border_color="#000")
+            frame_ticket.pack(fill=ctk.X, padx=20, pady=5)
             ticket.widget = frame_ticket
 
             if ticket.collapsed:
-                tk.Label(frame_ticket, text=f"Ticket: {ticket.nome} - R$ {ticket.valor_str}",
-                         font=("Helvetica", 10, "bold"), bg=bg_color, fg="black").pack(anchor="w")
-                btn_expand = tk.Button(frame_ticket, text="Expand", font=("Helvetica", 8),
-                                       command=lambda t=ticket: self.toggle_ticket(t))
-                btn_expand.pack(anchor="e")
+                ctk.CTkLabel(frame_ticket, text=f"Ticket: {ticket.nome} - R$ {ticket.valor_str}",
+                         font=("Helvetica", 10, "bold"), fg_color=bg_color, text_color="black").pack(padx=15, pady=10)
+                btn_expand = ctk.CTkButton(frame_ticket, text="Expand", font=("Helvetica", 10),
+                                       command=lambda t=ticket: self.toggle_ticket(t), fg_color="#2e2e2e")
+                btn_expand.pack(padx=2, pady=5)
             else:
-                tk.Label(frame_ticket, text=f"Ticket #{i+1}", font=("Helvetica", 10, "bold"),
-                         bg=bg_color, fg="black").pack(anchor="w")
-                tk.Label(frame_ticket, text=f"Nome: {ticket.nome}", bg=bg_color, fg="black").pack(anchor="w")
-                tk.Label(frame_ticket, text=f"Valor: {ticket.valor_str}", bg=bg_color, fg="black").pack(anchor="w")
-                btn_collapse = tk.Button(frame_ticket, text="Collapse", font=("Helvetica", 8),
-                                         command=lambda t=ticket: self.toggle_ticket(t))
-                btn_collapse.pack(anchor="e")
+                ctk.CTkLabel(frame_ticket, text=f"Ticket #{i+1}", font=("Helvetica", 12, "bold"),
+                         fg_color=bg_color, text_color="black").pack(pady=2)
+                ctk.CTkLabel(frame_ticket, text=f"Nome: {ticket.nome}", fg_color=bg_color, text_color="black").pack(pady=2)
+                ctk.CTkLabel(frame_ticket, text=f"Valor: R$ {ticket.valor_str}", fg_color=bg_color, text_color="black").pack(pady=2)
+                btn_collapse = ctk.CTkButton(frame_ticket, text="Collapse", font=("Helvetica", 10),
+                                         command=lambda t=ticket: self.toggle_ticket(t), fg_color="#2e2e2e")
+                btn_collapse.pack(padx=2, pady=5)
             frame_ticket.bind("<ButtonPress-1>", lambda event, t=ticket: self.on_ticket_press(event, t))
             frame_ticket.bind("<B1-Motion>", self.on_ticket_motion)
             frame_ticket.bind("<ButtonRelease-1>", self.on_ticket_release)
 
         # Lista de Atendentes
-        tk.Label(self.frame_atendentes, text="ATENDENTES", font=("Helvetica", 14, "bold"),
-                 bg="#e0e0e0", fg="black").pack(pady=5)
+        ctk.CTkLabel(self.frame_atendentes, text="ATENDENTES", font=("Helvetica", 14, "bold"), 
+                     text_color="black", width=200).pack(pady=10, padx=10)
         for i, atendente in enumerate(self.atendentes):
-            frame_atendente = tk.Frame(self.frame_atendentes, bd=1, relief=tk.SOLID, padx=5, pady=5, bg="#dddddd")
-            frame_atendente.pack(fill=tk.X, padx=5, pady=5)
+            frame_atendente = ctk.CTkFrame(self.frame_atendentes, border_width=2, fg_color="#dddddd", border_color="#000")
+            frame_atendente.pack(fill=ctk.X, padx=10, pady=10)
             atendente.widget = frame_atendente
 
             if atendente.collapsed:
-                tk.Label(frame_atendente, text=f"Atendente: {atendente.nome}",
-                         font=("Helvetica", 10, "bold"), bg="#dddddd", fg="black").pack(anchor="w")
-                btn_expand = tk.Button(frame_atendente, text="Expand", font=("Helvetica", 8),
-                                       command=lambda a=atendente: self.toggle_atendente(a))
-                btn_expand.pack(anchor="e")
+                ctk.CTkLabel(frame_atendente, text=f"Atendente: {atendente.nome}",
+                         font=("Helvetica", 10, "bold"), fg_color="#dddddd", text_color="black").pack(padx=15, pady=10)
+                btn_expand = ctk.CTkButton(frame_atendente, text="Expand", font=("Helvetica", 10),
+                                       command=lambda a=atendente: self.toggle_atendente(a), fg_color="#2e2e2e")
+                btn_expand.pack(padx=2, pady=5)
             else:
-                tk.Label(frame_atendente, text=f"Atendente: {atendente.nome}",
-                         font=("Helvetica", 10, "bold"), bg="#dddddd", fg="black").pack(anchor="w")
-                tk.Label(frame_atendente, text=f"Senioridade: {atendente.senioridade_str}",
-                         bg="#dddddd", fg="black").pack(anchor="w")
-                tk.Label(frame_atendente, text=f"Custo: {atendente.custo}",
-                         bg="#dddddd", fg="black").pack(anchor="w")
-                tk.Label(frame_atendente, text=f"Soma dos Tickets: {atendente.soma_tickets()}",
-                         bg="#dddddd", fg="black").pack(anchor="w", pady=2)
-                tk.Label(frame_atendente, text=f"Custo Total: R$ {atendente.total_cost():.2f}",
-                         bg="#dddddd", fg="black").pack(anchor="w", pady=2)
+                ctk.CTkLabel(frame_atendente, text=f"Atendente: {atendente.nome}",
+                         font=("Helvetica", 10, "bold"), fg_color="#dddddd", text_color="black").pack(anchor="w")
+                ctk.CTkLabel(frame_atendente, text=f"Senioridade: {atendente.senioridade_str}",
+                         fg_color="#dddddd", text_color="black")
+                ctk.CTkLabel(frame_atendente, text=f"Custo: {atendente.custo}",
+                         fg_color="#dddddd", text_color="black")
+                ctk.CTkLabel(frame_atendente, text=f"Soma dos Tickets: {atendente.soma_tickets()}",
+                         fg_color="#dddddd", text_color="black").pack(pady=2)
+                ctk.CTkLabel(frame_atendente, text=f"Custo Total: R$ {atendente.total_cost():.2f}",
+                         fg_color="#dddddd", text_color="black").pack( pady=2)
                 for tkt in atendente.tickets_alocados:
-                    tk.Label(frame_atendente, text=f"-> {tkt.nome} ({tkt.valor_str})",
-                             bg="#dddddd", fg="black").pack(anchor="w")
-                btn_collapse = tk.Button(frame_atendente, text="Collapse", font=("Helvetica", 8),
-                                         command=lambda a=atendente: self.toggle_atendente(a))
-                btn_collapse.pack(anchor="e")
+                    ctk.CTkLabel(frame_atendente, text=f"-> {tkt.nome} ({tkt.valor_str})",
+                            fg_color="#dddddd", text_color="black", font=("Helvetica", 12, "bold")).pack(anchor="w")
+                btn_collapse = ctk.CTkButton(frame_atendente, text="Collapse", font=("Helvetica", 10),
+                                         command=lambda a=atendente: self.toggle_atendente(a), fg_color="#2e2e2e")
+                btn_collapse.pack(padx=2, pady=5)
 
         # Desenha as Linhas de Conexão
         self.canvas.delete("link_line")
@@ -353,67 +361,68 @@ class TicketManagerApp:
         custo_total = sum(a.total_cost() for a in self.atendentes)
 
         # Cria um "card" (Frame) com borda e fundo claro
-        card_frame = tk.Frame(self.frame_summary, bd=2, relief=tk.RIDGE, bg="#f9f9f9")
+        card_frame = ctk.CTkFrame(self.frame_summary, border_width=2, fg_color="#f9f9f9", width=300)
         card_frame.pack(padx=10, pady=10, fill="both", expand=True)
 
         # Título em destaque
-        tk.Label(card_frame,
+        ctk.CTkLabel(card_frame,
                 text="RESUMO",
                 font=("Helvetica", 16, "bold"),
-                bg="#f9f9f9",
-                fg="#333").pack(pady=(10,5))
+                fg_color="#f9f9f9",
+                text_color="#333",
+                width=300).pack(pady=(10,5))
 
         # Subtítulo ou descrição
-        tk.Label(card_frame,
+        ctk.CTkLabel(card_frame,
                 text="Visão geral dos dados atuais",
                 font=("Helvetica", 10),
-                bg="#f9f9f9",
-                fg="#666").pack(pady=(0,10))
+                fg_color="#333",
+                text_color="#f9f9f9").pack(pady=(0,10))
 
         # Cria uma fonte para os destaques
         highlight_font = ("Helvetica", 11, "bold")
 
         # Exibe informações gerais (podem ficar com fonte normal)
-        tk.Label(card_frame,
+        ctk.CTkLabel(card_frame,
                 text=f"Total de Tickets: {total_tickets}",
-                font=("Helvetica", 10),
-                bg="#f9f9f9",
-                fg="#333").pack(anchor="w", padx=10, pady=2)
+                font=("Helvetica", 12),
+                fg_color="#f9f9f9",
+                text_color="#333").pack(padx=10, pady=1)
 
-        tk.Label(card_frame,
+        ctk.CTkLabel(card_frame,
                 text=f"Tickets Alocados: {tickets_alocados}",
-                font=("Helvetica", 10),
-                bg="#f9f9f9",
-                fg="#333").pack(anchor="w", padx=10, pady=2)
+                font=("Helvetica", 12),
+                fg_color="#f9f9f9",
+                text_color="#333").pack(padx=10, pady=1)
 
-        tk.Label(card_frame,
+        ctk.CTkLabel(card_frame,
                 text=f"Total de Atendentes: {total_atendentes}",
-                font=("Helvetica", 10),
-                bg="#f9f9f9",
-                fg="#333").pack(anchor="w", padx=10, pady=2)
+                font=("Helvetica", 12),
+                fg_color="#f9f9f9",
+                text_color="#333").pack(padx=10, pady=1)
 
         # Separador visual
-        separator = tk.Frame(card_frame, height=2, bd=0, bg="#ddd")
+        separator = ctk.CTkFrame(card_frame, height=2, border_width=0, fg_color="#ddd")
         separator.pack(fill="x", padx=10, pady=10)
 
         # Exibe os valores em destaque
-        tk.Label(card_frame,
+        ctk.CTkLabel(card_frame,
                 text=f"Senioridade Total: {total_senioridade}",
                 font=highlight_font,
-                bg="#f9f9f9",
-                fg="#444").pack(anchor="w", padx=10, pady=5)
+                fg_color="#f9f9f9",
+                text_color="#444").pack(anchor="w", padx=10, pady=5)
 
-        tk.Label(card_frame,
-                text=f"Total de Valor (Tickets): {total_valor_tickets}",
+        ctk.CTkLabel(card_frame,
+                text=f"Total de Valor (Tickets): R$ {total_valor_tickets}",
                 font=highlight_font,
-                bg="#f9f9f9",
-                fg="#444").pack(anchor="w", padx=10, pady=5)
+                fg_color="#f9f9f9",
+                text_color="#444").pack(anchor="w", padx=10, pady=5)
 
-        tk.Label(card_frame,
+        ctk.CTkLabel(card_frame,
                 text=f"Custo Total: R$ {custo_total:.2f}",
                 font=("Helvetica", 12, "bold"),
-                bg="#f9f9f9",
-                fg="#aa0000").pack(anchor="w", padx=10, pady=5)
+                fg_color="#f9f9f9",
+                text_color="#aa0000").pack(anchor="w", padx=10, pady=5)
 
     # def update_summary(self):
     #     for widget in self.frame_summary.winfo_children():
@@ -435,10 +444,10 @@ class TicketManagerApp:
     # Métodos de Drag & Drop para Tickets
     def on_ticket_press(self, event, ticket):
         self.drag_data = {"ticket": ticket, "ghost": None}
-        ghost = tk.Toplevel(self.root)
+        ghost = ctk.CTkToplevel(self.root)
         ghost.overrideredirect(True)
-        ghost.configure(bg="yellow")
-        label = tk.Label(ghost, text=f"Ticket: {ticket.nome}", bg="yellow", fg="black")
+        ghost.configure(fg_color="#d1c21b")
+        label = ctk.CTkLabel(ghost, text=f"Ticket: {ticket.nome}", fg_color="#d1c21b", text_color="black")
         label.pack()
         self.drag_data["ghost"] = ghost
         ghost.geometry(f"+{event.x_root}+{event.y_root}")
@@ -535,15 +544,20 @@ class TicketManagerApp:
 
     # Métodos para criação manual via janelas
     def janela_criar_ticket(self):
-        janela = tk.Toplevel(self.root)
+        janela = ctk.CTkToplevel(self.root)
         janela.title("Criar Ticket")
-        janela.geometry("350x200")
-        janela.configure(bg="white")
-        tk.Label(janela, text="Nome do Ticket:", fg="black", bg="white").pack(pady=5)
-        entry_nome = tk.Entry(janela)
+        janela.geometry("400x300")
+        janela.configure(fg_color="white")
+
+        janela.focus_force()  # Sets focus to the new window
+        janela.attributes("-topmost", True)  # Forces window to stay on top
+        janela.lift()  # Brings it to the front
+
+        ctk.CTkLabel(janela, text="Nome do Ticket:", text_color="black", fg_color="white").pack(pady=5)
+        entry_nome = ctk.CTkEntry(janela)
         entry_nome.pack()
-        tk.Label(janela, text="Valor do Ticket (ex: 10 ou R$10):", fg="black", bg="white").pack(pady=5)
-        entry_valor = tk.Entry(janela)
+        ctk.CTkLabel(janela, text="Valor do Ticket (ex: 10 ou R$10):", text_color="black", fg_color="white").pack(pady=5)
+        entry_valor = ctk.CTkEntry(janela)
         entry_valor.pack()
         def salvar_ticket():
             nome = entry_nome.get().strip()
@@ -558,22 +572,27 @@ class TicketManagerApp:
             self.tickets.append(novo_ticket)
             self.atualizar_listas()
             janela.destroy()
-        tk.Button(janela, text="Salvar", bg="#ccffcc", font=("Helvetica", 9),
+        ctk.CTkButton(janela, text="Salvar", fg_color="#333",
                   command=salvar_ticket).pack(pady=10)
 
     def janela_criar_atendente(self):
-        janela = tk.Toplevel(self.root)
+        janela = ctk.CTkToplevel(self.root)
         janela.title("Criar Atendente")
-        janela.geometry("350x220")
-        janela.configure(bg="white")
-        tk.Label(janela, text="Nome do Atendente:", fg="black", bg="white").pack(pady=5)
-        entry_nome = tk.Entry(janela)
+        janela.geometry("450x300")
+        janela.configure(fg_color="white")
+
+        janela.focus_force()  
+        janela.attributes("-topmost", True) 
+        janela.lift()        
+
+        ctk.CTkLabel(janela, text="Nome do Atendente:", text_color="black", fg_color="white").pack(pady=5)
+        entry_nome = ctk.CTkEntry(janela)
         entry_nome.pack()
-        tk.Label(janela, text="Senioridade (número - capacidade):", fg="black", bg="white").pack(pady=5)
-        entry_senioridade = tk.Entry(janela)
+        ctk.CTkLabel(janela, text="Senioridade (número - capacidade):", text_color="black", fg_color="white").pack(pady=5)
+        entry_senioridade = ctk.CTkEntry(janela)
         entry_senioridade.pack()
-        tk.Label(janela, text="Custo (ex: R$ 100/h):", fg="black", bg="white").pack(pady=5)
-        entry_custo = tk.Entry(janela)
+        ctk.CTkLabel(janela, text="Custo (ex: R$ 100/h):", text_color="black", fg_color="white").pack(pady=5)
+        entry_custo = ctk.CTkEntry(janela)
         entry_custo.pack()
         def salvar_atendente():
             nome = entry_nome.get().strip()
@@ -589,7 +608,7 @@ class TicketManagerApp:
             self.atendentes.append(novo_atendente)
             self.atualizar_listas()
             janela.destroy()
-        tk.Button(janela, text="Salvar", bg="#ccffcc", font=("Helvetica", 9),
+        ctk.CTkButton(janela, text="Salvar", fg_color="#333",
                   command=salvar_atendente).pack(pady=10)
 
     def limpar_alocacoes(self):
@@ -609,7 +628,7 @@ class TicketManagerApp:
         self.atualizar_listas()
 
 def main():
-    root = tk.Tk()
+    root = ctk.CTk()
     # Exemplo de dados estruturados (opcional)
     # tickets_data = [
     #     {"ticket_nome": "Ticket 1", "ticket_value": "10"},
