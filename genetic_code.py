@@ -70,7 +70,7 @@ class GeneticCode:
         custo_total = df_alocacao["valor"].sum()
         return df_alocacao, tempo_processo, custo_total
 
-    def execute(self, tamanho_pop=100, num_geracoes=40):
+    def execute(self, tamanho_pop=1000, num_geracoes=100):
         pop = self.toolbox.population(n=tamanho_pop)
         fitnesses = list(map(self.toolbox.evaluate, pop))
         for ind, fit in zip(pop, fitnesses):

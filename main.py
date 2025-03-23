@@ -4,15 +4,24 @@ from genetic_code import GeneticCode
 import matplotlib.pyplot as plt
 
 tarefas = [
-    {"nome": f"Ticket {i+1}", "peso": p} for i, p in enumerate([2, 5, 3, 4, 7, 6, 9, 3, 4, 8])
+    {"nome": "ticket_1", "peso": 4},
+    {"nome": "ticket_2", "peso": 3},
+    {"nome": "ticket_3", "peso": 4},
+    {"nome": "ticket_4", "peso": 9},
+    {"nome": "ticket_5", "peso": 5},
+    {"nome": "ticket_6", "peso": 1},
+    {"nome": "ticket_7", "peso": 2},
+    {"nome": "ticket_8", "peso": 2},
+    {"nome": "ticket_9", "peso": 5},
+    {"nome": "ticket_10", "peso": 7}
 ]
 
 profissionais = [
-    {"nome": "felipe", "capacidade": 2, "valor_hora": 100},
-    {"nome": "paulo", "capacidade": 3, "valor_hora": 110},
-    {"nome": "joao", "capacidade": 4, "valor_hora": 120},
-    {"nome": "gabriel", "capacidade": 5, "valor_hora": 130},
-    {"nome": "pedro", "capacidade": 6, "valor_hora": 140},
+    {"nome": "Lucio", "capacidade": 1, "valor_hora": 100},
+    {"nome": "Ana", "capacidade": 2, "valor_hora": 110},
+    {"nome": "Gabriel", "capacidade": 3, "valor_hora": 120},
+    {"nome": "Helena", "capacidade": 4, "valor_hora": 130},
+    {"nome": "Igor", "capacidade": 5, "valor_hora": 140}
 ]
 
 alocacoes = {}
