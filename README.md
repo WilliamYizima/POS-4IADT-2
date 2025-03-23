@@ -17,4 +17,13 @@ RM 360214
 Luiz Ricardo Zinsly Calmon -
 RM359894
 
-## Como rodar
+## Entrega 02
+
+## Rodar
+
+```
+pip install -r requirements.txt
+python main.py
+```
+
+irá abrir uma nova tela do tkinter para rodar
