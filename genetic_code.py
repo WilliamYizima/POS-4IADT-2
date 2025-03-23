@@ -1,6 +1,7 @@
 
 import random
 import math
+import numpy as np
 import pandas as pd
 from deap import base, creator, tools
 
@@ -10,6 +11,8 @@ class GeneticCode:
         self.profissionais = profissionais
         self.callback = callback
         self.toolbox = base.Toolbox()
+        self.historico_populacoes = []
+        self.historico_fitness = []
 
         if not hasattr(creator, "FitnessMin"):
             creator.create("FitnessMin", base.Fitness, weights=(-1.0, -1.0))
@@ -72,6 +75,7 @@ class GeneticCode:
 
     def execute(self, tamanho_pop=1000, num_geracoes=100):
         pop = self.toolbox.population(n=tamanho_pop)
+        hof = tools.ParetoFront()  # Armazena as soluções não-dominadas
         fitnesses = list(map(self.toolbox.evaluate, pop))
         for ind, fit in zip(pop, fitnesses):
             ind.fitness.values = fit
@@ -90,17 +94,59 @@ class GeneticCode:
                 if random.random() < 0.1:
                     self.toolbox.mutate(mutant)
                     del mutant.fitness.values
-
+            # Avaliação
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
             fitnesses = map(self.toolbox.evaluate, invalid_ind)
             for ind, fit in zip(invalid_ind, fitnesses):
                 ind.fitness.values = fit
 
+            # Atualização da população
             pop[:] = offspring
 
-            best = tools.selBest(pop, 1)[0]
-            if self.callback:
-                df, tempo, custo = self.analyze_solution(best)
-                self.callback(gen, df, tempo, custo)
+            # Atualiza o hall of fame
+            hof.update(pop)
 
-        return tools.selBest(pop, 1)[0]
+            # Armazenar para histórico
+            self.historico_populacoes.append(pop[:])
+            self.historico_fitness.append([ind.fitness.values for ind in pop])
+
+            # Estatísticas da geração atual
+            fits = [ind.fitness.values for ind in pop]
+            min_fit = np.min(fits, axis=0)
+            avg_fit = np.mean(fits, axis=0)
+
+            # Exibe progresso
+            print(f"-- Geração {g+1} --")
+            print(f"  Min: {min_fit}")
+            print(f"  Avg: {avg_fit}")
+
+        # Seleciona as melhores soluções
+        # 1. Melhor equilíbrio (70% custo, 30% tempo)
+        pesos = (0.7, 0.3)
+        indice_equilibrio = np.argmin([pesos[0]*ind.fitness.values[0] + pesos[1]*ind.fitness.values[1] for ind in pop])
+
+        # 2. Menor custo
+        indice_menor_custo = np.argmin([ind.fitness.values[0] for ind in pop])
+
+        # 3. Menor tempo
+        indice_menor_tempo = np.argmin([ind.fitness.values[1] for ind in pop])
+
+        solucao_equilibrada = pop[indice_equilibrio]
+        solucao_menor_custo = pop[indice_menor_custo]
+        solucao_menor_tempo = pop[indice_menor_tempo]
+
+        return solucao_equilibrada, solucao_menor_custo, solucao_menor_tempo, hof, historico_populacoes, historico_fitness
+
+        #     invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+        #     fitnesses = map(self.toolbox.evaluate, invalid_ind)
+        #     for ind, fit in zip(invalid_ind, fitnesses):
+        #         ind.fitness.values = fit
+
+        #     pop[:] = offspring
+
+        #     best = tools.selBest(pop, 1)[0]
+        #     if self.callback:
+        #         df, tempo, custo = self.analyze_solution(best)
+        #         self.callback(gen, df, tempo, custo)
+
+        # return tools.selBest(pop, 1)[0]
