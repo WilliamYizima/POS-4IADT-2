@@ -1,5 +1,3 @@
-## Otimizacao
-
 ## Participantes
 
 Rafael Alves Cardoso -
