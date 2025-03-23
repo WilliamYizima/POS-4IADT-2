@@ -4,16 +4,16 @@ from genetic_code import GeneticCode
 import matplotlib.pyplot as plt
 
 tarefas = [
-    {"nome": "ticket_1", "peso": 4},
-    {"nome": "ticket_2", "peso": 3},
-    {"nome": "ticket_3", "peso": 4},
-    {"nome": "ticket_4", "peso": 9},
-    {"nome": "ticket_5", "peso": 5},
-    {"nome": "ticket_6", "peso": 1},
-    {"nome": "ticket_7", "peso": 2},
-    {"nome": "ticket_8", "peso": 2},
-    {"nome": "ticket_9", "peso": 5},
-    {"nome": "ticket_10", "peso": 7}
+    {"nome": "ticket_1(4)", "peso": 4},
+    {"nome": "ticket_2(3)", "peso": 3},
+    {"nome": "ticket_3(4)", "peso": 4},
+    {"nome": "ticket_4(9)", "peso": 9},
+    {"nome": "ticket_5(5)", "peso": 5},
+    {"nome": "ticket_6(1)", "peso": 1},
+    {"nome": "ticket_7(2)", "peso": 2},
+    {"nome": "ticket_8(2)", "peso": 2},
+    {"nome": "ticket_9(5)", "peso": 5},
+    {"nome": "ticket_10(7)", "peso": 7}
 ]
 
 profissionais = [
@@ -46,13 +46,13 @@ def rodar_algoritmo():
     historico_fitness = []
     gen = GeneticCode(tarefas, profissionais, callback=registrar_fitness)
     melhor = gen.execute()
-    df_final, tempo, custo = gen.analyze_solution(melhor)
+    df_final, df_carga, tempo, custo = gen.analyze_solution(melhor)
     callback_por_geracao(len(historico_fitness)-1, df_final, tempo, custo)
     visualizar_evolucao(historico_fitness)
     mostrar_metrica_final(tempo, custo)
 
 def registrar_fitness(gen, df_aloc, tempo, custo):
-    custos = [row["valor"] for _, row in df_aloc.iterrows()]
+    custos = [row["custo"] for _, row in df_aloc.iterrows()]
     tempos = [tempo for _ in custos]
     historico_fitness.append(list(zip(custos, tempos)))
     callback_por_geracao(gen, df_aloc, tempo, custo)
@@ -67,7 +67,7 @@ def atualizar_canvas():
     for j, prof in enumerate(profissionais):
         y = 50 + j * 80
         canvas.create_rectangle(440, y, 580, y+30, fill="lightyellow", outline="black")
-        texto = f"{prof['nome']} ({prof['capacidade']})"
+        texto = f"{prof['nome']} ({prof['capacidade']}) - (R${prof['valor_hora']})"
         canvas.create_text(510, y+15, text=texto, fill="black")
 
     for i, tarefa in enumerate(tarefas):

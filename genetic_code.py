@@ -64,14 +64,30 @@ class GeneticCode:
 
             alocacao.append({
                 "tarefa": tarefa["nome"],
+                "peso_tarefa": tarefa["peso"],
                 "profissional": prof["nome"],
-                "valor": tarefa["peso"] * 10  # valor fictício
+                "capacidade": prof["capacidade"],
+                "tempo_estimado": round(tempo, 2),
+                "horas_faturadas": horas_faturadas,
+                "custo": custo
             })
-
+        # Organiza os resultados
         df_alocacao = pd.DataFrame(alocacao)
         tempo_processo = max(tempo_total_profissional)
-        custo_total = df_alocacao["valor"].sum()
-        return df_alocacao, tempo_processo, custo_total
+        custo_total = df_alocacao["custo"].sum()
+
+        # Carga de trabalho por profissional
+        carga_trabalho = []
+        for i, tempo in enumerate(tempo_total_profissional):
+            if tempo > 0:  # Só mostra profissionais com tarefas alocadas
+                carga_trabalho.append({
+                    "profissional": self.profissionais[i]["nome"],
+                    "tempo_total": round(tempo, 2),
+                    "tarefas": len([x for x in solution if x == i])
+                })
+
+        df_carga = pd.DataFrame(carga_trabalho)
+        return df_alocacao,df_carga, tempo_processo, custo_total
 
     def execute(self, tamanho_pop=1000, num_geracoes=100):
         pop = self.toolbox.population(n=tamanho_pop)
@@ -116,37 +132,59 @@ class GeneticCode:
             avg_fit = np.mean(fits, axis=0)
 
             # Exibe progresso
-            print(f"-- Geração {g+1} --")
+            print(f"-- Geração {gen+1} --")
             print(f"  Min: {min_fit}")
             print(f"  Avg: {avg_fit}")
 
         # Seleciona as melhores soluções
         # 1. Melhor equilíbrio (70% custo, 30% tempo)
-        pesos = (0.7, 0.3)
-        indice_equilibrio = np.argmin([pesos[0]*ind.fitness.values[0] + pesos[1]*ind.fitness.values[1] for ind in pop])
+        # pesos = (0.7, 0.3)
+        # indice_equilibrio = np.argmin([pesos[0]*ind.fitness.values[0] + pesos[1]*ind.fitness.values[1] for ind in pop])
 
-        # 2. Menor custo
-        indice_menor_custo = np.argmin([ind.fitness.values[0] for ind in pop])
+        # # 2. Menor custo
+        # indice_menor_custo = np.argmin([ind.fitness.values[0] for ind in pop])
 
-        # 3. Menor tempo
-        indice_menor_tempo = np.argmin([ind.fitness.values[1] for ind in pop])
+        # # 3. Menor tempo
+        # indice_menor_tempo = np.argmin([ind.fitness.values[1] for ind in pop])
 
-        solucao_equilibrada = pop[indice_equilibrio]
-        solucao_menor_custo = pop[indice_menor_custo]
-        solucao_menor_tempo = pop[indice_menor_tempo]
+        # solucao_equilibrada = pop[indice_equilibrio]
+        # solucao_menor_custo = pop[indice_menor_custo]
+        # solucao_menor_tempo = pop[indice_menor_tempo]
 
-        return solucao_equilibrada, solucao_menor_custo, solucao_menor_tempo, hof, historico_populacoes, historico_fitness
+        # return (solucao_equilibrada,
+        #         solucao_menor_custo,
+        #         solucao_menor_tempo,
+        #         hof,
+        #         self.historico_populacoes,
+        #         self.historico_fitness)
 
-        #     invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-        #     fitnesses = map(self.toolbox.evaluate, invalid_ind)
-        #     for ind, fit in zip(invalid_ind, fitnesses):
-        #         ind.fitness.values = fit
+            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+            fitnesses = map(self.toolbox.evaluate, invalid_ind)
+            for ind, fit in zip(invalid_ind, fitnesses):
+                ind.fitness.values = fit
 
-        #     pop[:] = offspring
+            pop[:] = offspring
 
-        #     best = tools.selBest(pop, 1)[0]
-        #     if self.callback:
-        #         df, tempo, custo = self.analyze_solution(best)
-        #         self.callback(gen, df, tempo, custo)
+            best = tools.selBest(pop, 1)[0]
+                # Seleciona as melhores soluções
+            # 1. Melhor equilíbrio (70% custo, 30% tempo)
+            pesos = (0.7, 0.3)
+            indice_equilibrio = np.argmin([pesos[0]*ind.fitness.values[0] + pesos[1]*ind.fitness.values[1] for ind in pop])
 
-        # return tools.selBest(pop, 1)[0]
+            # 2. Menor custo
+            indice_menor_custo = np.argmin([ind.fitness.values[0] for ind in pop])
+
+            # 3. Menor tempo
+            indice_menor_tempo = np.argmin([ind.fitness.values[1] for ind in pop])
+
+            solucao_equilibrada = pop[indice_equilibrio]
+            solucao_menor_custo = pop[indice_menor_custo]
+            solucao_menor_tempo = pop[indice_menor_tempo]
+            if self.callback:
+                df, df_carga,tempo,custo = self.analyze_solution(solucao_equilibrada)
+                print('>>>tempo e custo')
+                print(custo)
+                print(tempo)
+                self.callback(gen, df, tempo, custo)
+
+        return tools.selBest(pop, 1)[0]
